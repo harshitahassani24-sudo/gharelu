@@ -1,0 +1,1 @@
+Gharelu has a working interface with three modes (Cook, Store, Nourish), a warm earthy design that feels like a recipe card not a tech product, Hinglish placeholder text and loading state ("Soch rahi hoon..."), and the AI call already wired in. It is rough in one place — the API call needs a key — and we will fix that right now.
