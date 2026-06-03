@@ -598,30 +598,26 @@ Your response should feel like advice from a mother who has cooked for decades â
 Important: Never count calories. Never mention weight loss unless specifically asked about a health condition like diabetes. If someone mentions a health condition like diabetes or acidity, offer real traditional wisdom (jeera, methi, cinnamon etc.) but in a warm, non-clinical way.`;
 
       try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            system: systemPrompt,
-            messages: [
-              { role: 'user', content: input }
-            ]
-          })
-        });
+        const response = await fetch('/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    message: input,
+    mode: currentMode
+  })
+});
 
-        const data = await response.json();
+const data = await response.json();
 
-        if (data.content && data.content[0] && data.content[0].text) {
-          document.getElementById('responseText').textContent = data.content[0].text;
-          responseCard.classList.add('visible');
-          responseCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-          throw new Error('No response content');
-        }
+if (data.reply) {
+  document.getElementById('responseText').textContent = data.reply;
+  responseCard.classList.add('visible');
+  responseCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+} else {
+  throw new Error(data.error || 'No response content');
+}
 
       } catch (error) {
         console.error('Error:', error);
