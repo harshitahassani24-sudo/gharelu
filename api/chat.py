@@ -47,7 +47,7 @@ Important: Never count calories. Never mention weight loss unless specifically a
 
             # Call the Anthropic API
             anthropic_request = {
-                'model': 'claude-sonnet-4-20250514',
+                'model': 'claude-sonnet-4-6',
                 'max_tokens': 1000,
                 'system': system_prompt,
                 'messages': [
