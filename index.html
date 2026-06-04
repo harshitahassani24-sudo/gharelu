@@ -505,7 +505,11 @@
         <button class="mode-tab" onclick="setMode('store')">🧺 Store</button>
         <button class="mode-tab" onclick="setMode('nourish')">🌿 Nourish</button>
       </div>
-
+<div class="sub-mode-tabs" id="cookSubModes">
+  <button class="sub-mode-tab active" onclick="setCookRegion('general', event)">🍳 Any</button>
+  <button class="sub-mode-tab" onclick="setCookRegion('south', event)">🥥 South Indian</button>
+  <button class="sub-mode-tab" onclick="setCookRegion('north', event)">🫓 North Indian</button>
+</div>
       <p class="mode-hint" id="modeHint">Tell me what's in your kitchen and how much time you have.</p>
 
       <textarea
