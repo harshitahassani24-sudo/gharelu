@@ -637,7 +637,7 @@ Important: Never count calories. Never mention weight loss unless specifically a
   },
   body: JSON.stringify({
     message: input,
-    mode: currentMode
+    mode: currentMode,
     region: currentMode === 'cook' ? cookRegion : null
   })
 });
