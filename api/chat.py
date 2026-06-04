@@ -20,8 +20,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_error_response(400, 'No message provided')
                 return
 
-            # Mode-specific instructions
-                      region = data.get('region', 'general')
+            region = data.get('region', 'general')
 
             # Region-specific cooking guidance
             cook_note = 'The user wants to know what to cook.'
@@ -36,6 +35,7 @@ class handler(BaseHTTPRequestHandler):
                 'store': 'The user wants to know how to store ingredients properly.',
                 'nourish': 'The user wants to know how to eat what they made — what to pair, when, how much.'
             }
+
             mode_note = mode_instructions.get(mode, mode_instructions['cook'])
 
             # The system prompt — Gharelu's voice
