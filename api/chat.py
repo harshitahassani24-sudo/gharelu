@@ -66,6 +66,23 @@ Important: Never count calories. Never mention weight loss unless specifically a
             if image:
                 system_prompt += "\n\nThe user has attached a photo — it may show their ingredients, their fridge, or a dish they made. Look carefully at what is actually in the image and base your answer on what you really see, not on assumptions."
 
+            # Time-of-day awareness — gently shapes timing advice (light food late, etc.)
+            time_info = data.get('time') or {}
+            hour = time_info.get('hour')
+            label = time_info.get('label')
+            if isinstance(hour, int):
+                if 5 <= hour < 11:
+                    part = 'morning'
+                elif 11 <= hour < 16:
+                    part = 'afternoon'
+                elif 16 <= hour < 19:
+                    part = 'evening'
+                elif 19 <= hour < 23:
+                    part = 'night, around dinner time'
+                else:
+                    part = 'late night'
+                system_prompt += f"\n\nFor context, it is currently around {label} ({part}) where the user is. Let this gently shape your timing advice — lighter, easy-to-digest food late at night; something warm and energising in the morning. Only mention the time if it is actually relevant to your answer."
+
             # Get the API key from Vercel environment variables
             api_key = os.environ.get('ANTHROPIC_API_KEY')
 
