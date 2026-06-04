@@ -21,11 +21,19 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             # Mode-specific instructions
-            mode_instructions = {
-                'cook': 'The user wants to know what to cook.',
-                'store': 'The user wants to know how to store ingredients properly.',
-                'nourish': 'The user wants to know how to eat what they made — what to pair, when, how much.'
-            }
+          region = data.get('region', 'general')
+
+cook_note = 'The user wants to know what to cook.'
+if region == 'south':
+    cook_note = 'The user wants to cook South Indian food. Focus on Tamil, Telugu, Kannada, and Malayali dishes — fries, sambar, rasam, dosas, idlis, rice dishes, kootu, avial, coconut-based curries, fish curries. Pantry staples to draw from: curry leaves, mustard seeds, tamarind, coconut, urad dal, asafoetida, dried red chillies.'
+elif region == 'north':
+    cook_note = 'The user wants to cook North Indian food. Focus on Punjabi, UP, and Delhi-style dishes — rotis, parathas, sabzis, dal, chole, rajma, paneer dishes, tomato-onion gravies. Pantry staples to draw from: ghee, cumin, coriander, garam masala, amchur, kasuri methi.'
+
+mode_instructions = {
+    'cook': cook_note,
+    'store': 'The user wants to know how to store ingredients properly.',
+    'nourish': 'The user wants to know how to eat what they made — what to pair, when, how much.'
+}
 
             mode_note = mode_instructions.get(mode, mode_instructions['cook'])
 
