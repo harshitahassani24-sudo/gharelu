@@ -15,9 +15,10 @@ class handler(BaseHTTPRequestHandler):
 
             user_message = data.get('message', '')
             mode = data.get('mode', 'cook')
+            image = data.get('image')
 
-            if not user_message:
-                self.send_error_response(400, 'No message provided')
+            if not user_message and not image:
+                self.send_error_response(400, 'No message or image provided')
                 return
 
             region = data.get('region', 'general')
@@ -47,6 +48,9 @@ Your response should feel like advice from a mother who has cooked for decades �
 
 Important: Never count calories. Never mention weight loss unless specifically asked about a health condition like diabetes. If someone mentions a health condition like diabetes or acidity, offer real traditional wisdom (jeera, methi, cinnamon etc.) but in a warm, non-clinical way."""
 
+            if image:
+                system_prompt += "\n\nThe user has attached a photo — it may show their ingredients, their fridge, or a dish they made. Look carefully at what is actually in the image and base your answer on what you really see, not on assumptions."
+
             # Get the API key from Vercel environment variables
             api_key = os.environ.get('ANTHROPIC_API_KEY')
 
@@ -54,13 +58,29 @@ Important: Never count calories. Never mention weight loss unless specifically a
                 self.send_error_response(500, 'API key not configured')
                 return
 
+            # Build the user message content — image first (if attached), then text
+            content = []
+            if image and image.get('data'):
+                content.append({
+                    'type': 'image',
+                    'source': {
+                        'type': 'base64',
+                        'media_type': image.get('media_type', 'image/jpeg'),
+                        'data': image['data']
+                    }
+                })
+            content.append({
+                'type': 'text',
+                'text': user_message if user_message else 'Yeh dekho — iske hisaab se batao.'
+            })
+
             # Call the Anthropic API
             anthropic_request = {
                 'model': 'claude-sonnet-4-6',
                 'max_tokens': 1000,
                 'system': system_prompt,
                 'messages': [
-                    {'role': 'user', 'content': user_message}
+                    {'role': 'user', 'content': content}
                 ]
             }
 

@@ -194,6 +194,58 @@
   color: white;
   border-color: #8b6f47;
 }
+    .attach-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .attach-btn {
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--brown-light);
+      border: 1.5px dashed var(--border);
+      border-radius: 40px;
+      font-family: 'Kalam', cursive;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+    .attach-btn:hover {
+      background: var(--cream);
+      border-color: var(--orange-spice);
+      color: var(--orange-spice);
+      transform: none;
+      box-shadow: none;
+    }
+    .image-preview {
+      position: relative;
+      display: inline-flex;
+    }
+    .image-preview img {
+      height: 56px;
+      width: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+    }
+    .remove-img {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--brown-deep);
+      color: var(--cream);
+      font-size: 12px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .remove-img:hover { background: var(--orange-spice); transform: none; box-shadow: none; }
     .mode-hint {
       font-style: italic;
       font-size: 14px;
@@ -518,6 +570,15 @@
         rows="4"
       ></textarea>
 
+      <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+      <div class="attach-row">
+        <button type="button" class="attach-btn" onclick="document.getElementById('imageInput').click()">📷 Add a photo</button>
+        <div class="image-preview" id="imagePreview" style="display:none">
+          <img id="previewImg" src="" alt="attached photo">
+          <button type="button" class="remove-img" onclick="removeImage()">✕</button>
+        </div>
+      </div>
+
       <p class="error-text" id="errorText">Kuch problem ho gayi. Thoda ruko aur phir try karo.</p>
 
       <div class="submit-row">
@@ -599,6 +660,49 @@ function setCookRegion(region, e) {
   document.querySelectorAll('.sub-mode-tab').forEach(tab => tab.classList.remove('active'));
   e.target.classList.add('active');
 }
+
+    let attachedImage = null;
+
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // Resize down to keep the upload small (max 1024px on the long side)
+          const maxDim = 1024;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round(height * maxDim / width);
+              width = maxDim;
+            } else {
+              width = Math.round(width * maxDim / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          attachedImage = { media_type: 'image/jpeg', data: dataUrl.split(',')[1] };
+          document.getElementById('previewImg').src = dataUrl;
+          document.getElementById('imagePreview').style.display = 'inline-flex';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      attachedImage = null;
+      document.getElementById('imageInput').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('previewImg').src = '';
+    }
     function hideResponse() {
       document.getElementById('responseCard').classList.remove('visible');
       document.getElementById('errorText').style.display = 'none';
@@ -606,7 +710,7 @@ function setCookRegion(region, e) {
 
     async function askGharelu() {
       const input = document.getElementById('userInput').value.trim();
-      if (!input) {
+      if (!input && !attachedImage) {
         document.getElementById('userInput').focus();
         return;
       }
@@ -638,7 +742,8 @@ Important: Never count calories. Never mention weight loss unless specifically a
   body: JSON.stringify({
     message: input,
     mode: currentMode,
-    region: currentMode === 'cook' ? cookRegion : null
+    region: currentMode === 'cook' ? cookRegion : null,
+    image: attachedImage
   })
 });
 
@@ -648,6 +753,7 @@ if (data.reply) {
   document.getElementById('responseText').textContent = data.reply;
   responseCard.classList.add('visible');
   responseCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  removeImage();
 } else {
   throw new Error(data.error || 'No response content');
 }
