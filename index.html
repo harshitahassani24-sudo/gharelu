@@ -561,6 +561,7 @@
 
   <script>
     let currentMode = 'cook';
+let cookRegion = 'general';
 
     const modeConfig = {
       cook: {
@@ -590,9 +591,14 @@
       document.getElementById('modeHint').textContent = modeConfig[mode].hint;
       document.getElementById('userInput').placeholder = modeConfig[mode].placeholder;
       document.getElementById('modeTag').textContent = modeConfig[mode].tag;
-      hideResponse();
+      document.getElementById('cookSubModes').style.display = mode === 'cook' ? 'flex' : 'none';
+  hideResponse();
     }
-
+function setCookRegion(region, e) {
+  cookRegion = region;
+  document.querySelectorAll('.sub-mode-tab').forEach(tab => tab.classList.remove('active'));
+  e.target.classList.add('active');
+}
     function hideResponse() {
       document.getElementById('responseCard').classList.remove('visible');
       document.getElementById('errorText').style.display = 'none';
@@ -632,6 +638,7 @@ Important: Never count calories. Never mention weight loss unless specifically a
   body: JSON.stringify({
     message: input,
     mode: currentMode
+    region: currentMode === 'cook' ? cookRegion : null
   })
 });
 
