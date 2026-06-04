@@ -171,7 +171,29 @@
       border-color: var(--orange-spice);
       color: white;
     }
-
+  .sub-mode-tabs {
+  display: none;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.sub-mode-tab {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid #c8a882;
+  background: transparent;
+  color: #8b6f47;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.sub-mode-tab:hover { background: #f5ede0; }
+.sub-mode-tab.active {
+  background: #8b6f47;
+  color: white;
+  border-color: #8b6f47;
+}
     .mode-hint {
       font-style: italic;
       font-size: 14px;
