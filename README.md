@@ -18,6 +18,6 @@ Hostellers, newly married couples, working women, men who grew up watching someo
 
 ## Built by
 
-Harshita & [Friend's name] during She Vibes Challenge Week, June 2026.
+Harshita & Tejasvie during She Vibes Challenge Week, June 2026.
 
 Built on two mothers' real kitchen wisdom — one who shares it in daily conversation, one who sends it in voice notes.
