@@ -30,11 +30,26 @@ class handler(BaseHTTPRequestHandler):
             elif region == 'north':
                 cook_note = 'The user wants to cook North Indian food. Focus on Punjabi, UP, and Delhi-style dishes — rotis, parathas, sabzis, dal, chole, rajma, paneer dishes, tomato-onion gravies. Pantry staples to draw from: ghee, cumin, coriander, garam masala, amchur, kasuri methi.'
 
+            # Nourish: tailor to how the person is feeling, with traditional wisdom
+            feeling = data.get('feeling', 'general')
+            nourish_note = 'The user wants to know how to eat what they made — what to pair, when, how much.'
+            feeling_notes = {
+                'heavy': 'They are feeling heavy or bloated. Suggest light, digestive-friendly choices and gentle traditional aids — jeera water, ajwain, buttermilk (chaas), a short walk. Steer away from anything fried or heavy.',
+                'acidity': 'They have acidity. Suggest cooling, soothing foods — cold milk, banana, coconut water, saunf, jeera — and gently mention what to avoid (chai on an empty stomach, fried, very spicy).',
+                'low-energy': 'They feel low on energy. Suggest grounding, sustaining foods — ghee, dates, soaked almonds, a warm khichdi, banana — nothing sugary that will crash them.',
+                'cold-cough': 'They have a cold or cough. Suggest warm, comforting remedies — haldi doodh, ginger-tulsi kadha, hot soup, honey, warming spices like adrak and kali mirch.',
+                'period': 'They are on their period. Be especially tender. Suggest warm, iron- and comfort-rich foods — gud (jaggery), til, ajwain, warm haldi doodh, dal, leafy greens — and gentle warmth.',
+                'cant-sleep': 'They cannot sleep. Suggest calming, sleep-friendly choices — warm haldi doodh with a pinch of jaiphal (nutmeg), a light dinner, banana — and no chai or coffee late.',
+                'workout': 'They just worked out. Suggest protein- and recovery-friendly foods — dal, paneer, eggs, banana, dates, chana — to refuel without feeling heavy.'
+            }
+            if feeling in feeling_notes:
+                nourish_note = nourish_note + ' ' + feeling_notes[feeling]
+
             # Mode-specific instructions
             mode_instructions = {
                 'cook': cook_note,
                 'store': 'The user wants to know how to store ingredients properly.',
-                'nourish': 'The user wants to know how to eat what they made — what to pair, when, how much.'
+                'nourish': nourish_note
             }
 
             mode_note = mode_instructions.get(mode, mode_instructions['cook'])

@@ -591,6 +591,16 @@
   <button class="sub-mode-tab" onclick="setCookRegion('south', event)">🥥 South Indian</button>
   <button class="sub-mode-tab" onclick="setCookRegion('north', event)">🫓 North Indian</button>
 </div>
+<div class="sub-mode-tabs" id="nourishChips" style="display: none;">
+  <button class="sub-mode-tab active" onclick="setFeeling('general', event)">🍽️ Just eating</button>
+  <button class="sub-mode-tab" onclick="setFeeling('heavy', event)">😮‍💨 Feeling heavy</button>
+  <button class="sub-mode-tab" onclick="setFeeling('acidity', event)">🔥 Acidity</button>
+  <button class="sub-mode-tab" onclick="setFeeling('low-energy', event)">🥱 Low energy</button>
+  <button class="sub-mode-tab" onclick="setFeeling('cold-cough', event)">🤧 Cold/cough</button>
+  <button class="sub-mode-tab" onclick="setFeeling('period', event)">🩸 Period</button>
+  <button class="sub-mode-tab" onclick="setFeeling('cant-sleep', event)">😴 Can't sleep</button>
+  <button class="sub-mode-tab" onclick="setFeeling('workout', event)">💪 After workout</button>
+</div>
       <p class="mode-hint" id="modeHint">Tell me what's in your kitchen and how much time you have.</p>
 
       <textarea
@@ -683,13 +693,21 @@ let cookRegion = 'general';
       document.getElementById('userInput').placeholder = modeConfig[mode].placeholder;
       document.getElementById('modeTag').textContent = modeConfig[mode].tag;
       document.getElementById('cookSubModes').style.display = mode === 'cook' ? 'flex' : 'none';
+      document.getElementById('nourishChips').style.display = mode === 'nourish' ? 'flex' : 'none';
   hideResponse();
     }
 function setCookRegion(region, e) {
   cookRegion = region;
-  document.querySelectorAll('.sub-mode-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('#cookSubModes .sub-mode-tab').forEach(tab => tab.classList.remove('active'));
   e.target.classList.add('active');
 }
+
+    let nourishFeeling = 'general';
+    function setFeeling(feeling, e) {
+      nourishFeeling = feeling;
+      document.querySelectorAll('#nourishChips .sub-mode-tab').forEach(tab => tab.classList.remove('active'));
+      e.target.classList.add('active');
+    }
 
     let attachedImage = null;
 
@@ -827,6 +845,7 @@ Important: Never count calories. Never mention weight loss unless specifically a
     message: input,
     mode: currentMode,
     region: currentMode === 'cook' ? cookRegion : null,
+    feeling: currentMode === 'nourish' ? nourishFeeling : null,
     image: attachedImage
   })
 });
