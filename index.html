@@ -246,6 +246,35 @@
       justify-content: center;
     }
     .remove-img:hover { background: var(--orange-spice); transform: none; box-shadow: none; }
+    .mic-btn {
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--brown-light);
+      border: 1.5px dashed var(--border);
+      border-radius: 40px;
+      font-family: 'Kalam', cursive;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+    .mic-btn:hover {
+      background: var(--cream);
+      border-color: var(--orange-spice);
+      color: var(--orange-spice);
+      transform: none;
+      box-shadow: none;
+    }
+    .mic-btn.listening {
+      background: var(--orange-spice);
+      color: white;
+      border-style: solid;
+      border-color: var(--orange-spice);
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(196, 98, 45, 0.4); }
+      70%  { box-shadow: 0 0 0 10px rgba(196, 98, 45, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(196, 98, 45, 0); }
+    }
     .mode-hint {
       font-style: italic;
       font-size: 14px;
@@ -573,6 +602,7 @@
       <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
       <div class="attach-row">
         <button type="button" class="attach-btn" onclick="document.getElementById('imageInput').click()">📷 Add a photo</button>
+        <button type="button" class="mic-btn" id="micBtn" onclick="toggleVoice()">🎤 Speak</button>
         <div class="image-preview" id="imagePreview" style="display:none">
           <img id="previewImg" src="" alt="attached photo">
           <button type="button" class="remove-img" onclick="removeImage()">✕</button>
@@ -702,6 +732,60 @@ function setCookRegion(region, e) {
       document.getElementById('imageInput').value = '';
       document.getElementById('imagePreview').style.display = 'none';
       document.getElementById('previewImg').src = '';
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    function toggleVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const micBtn = document.getElementById('micBtn');
+
+      if (!SpeechRecognition) {
+        alert('Sorry beta, your browser does not support voice input. Try Chrome or Safari.');
+        return;
+      }
+
+      // If already listening, a second tap stops it
+      if (isListening) {
+        recognition.stop();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';        // handles English + Hinglish best
+      recognition.interimResults = false;
+      recognition.continuous = false;
+
+      recognition.onstart = function() {
+        isListening = true;
+        micBtn.classList.add('listening');
+        micBtn.textContent = '🎤 Listening...';
+      };
+
+      recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+          .map(r => r[0].transcript)
+          .join(' ')
+          .trim();
+        const textarea = document.getElementById('userInput');
+        textarea.value = (textarea.value ? textarea.value.trim() + ' ' : '') + transcript;
+      };
+
+      recognition.onerror = function(event) {
+        console.error('Voice error:', event.error);
+        if (event.error === 'not-allowed') {
+          alert('Mic access blocked. Please allow microphone permission and try again.');
+        }
+      };
+
+      recognition.onend = function() {
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micBtn.textContent = '🎤 Speak';
+      };
+
+      recognition.start();
     }
     function hideResponse() {
       document.getElementById('responseCard').classList.remove('visible');
